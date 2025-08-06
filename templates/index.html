@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhaiya Bot - AI Tutor</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for professional typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Lottie Player for high-quality animations -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    
+    <style>
+        /* Base styles for a modern look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a; /* A very dark gray for the base */
+            overflow: hidden; /* Prevents scrollbars from the aurora effect */
+        }
+
+        /* The main container with a background gradient */
+        .main-container {
+            background-image: radial-gradient(circle at 20% 20%, rgba(10, 87, 136, 0.3), transparent 40%),
+                              radial-gradient(circle at 80% 70%, rgba(136, 56, 10, 0.3), transparent 40%);
+        }
+
+        /* Glassmorphism effect for cards and inputs */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Custom styling for the dropdown to match the dark theme */
+        .custom-select {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .custom-select option {
+            background-color: #1a1a1a;
+            color: white;
+        }
+
+        /* Glow effect for the microphone button */
+        .mic-glow {
+            box-shadow: 0 0 15px 5px rgba(59, 130, 246, 0.4), 0 0 30px 10px rgba(59, 130, 246, 0.2);
+        }
+        .mic-glow:hover {
+            box-shadow: 0 0 20px 8px rgba(96, 165, 250, 0.6), 0 0 40px 15px rgba(96, 165, 250, 0.3);
+        }
+
+        /* Pulsing animation when listening */
+        .pulse {
+            animation: pulse-animation 1.5s infinite;
+        }
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            70% { box-shadow: 0 0 0 25px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        /* Fade-in animation for elements */
+        .fade-in {
+            animation: fadeInAnimation 1s ease-in-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeInAnimation {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-delay-1 { animation-delay: 0.2s; }
+        .fade-in-delay-2 { animation-delay: 0.4s; }
+        .fade-in-delay-3 { animation-delay: 0.6s; }
+        .fade-in-delay-4 { animation-delay: 0.8s; }
+        .fade-in-delay-5 { animation-delay: 1.0s; }
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <!-- Level Selection Modal -->
+    <div id="level-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 transition-opacity duration-300">
+        <div class="glass-card p-8 rounded-2xl w-full max-w-md text-center">
+            <h2 class="text-2xl font-bold text-white mb-4">Select Your Level</h2>
+            <p class="text-gray-400 mb-6">Choose your academic level to get tailored answers.</p>
+            <select id="level-select" class="w-full p-3 rounded-lg custom-select mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="class_1">Nursery / LKG / UKG</option>
+                <option value="class_1">Class 1</option>
+                <option value="class_5">Class 2 - 5</option>
+                <option value="class_10">Class 6 - 10</option>
+                <option value="class_10">Class 11 - 12</option>
+                <option value="jee_neet" selected>JEE / NEET Preparation</option>
+            </select>
+            <button id="confirm-level-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">Start Learning</button>
+        </div>
+    </div>
+
+    <div class="main-container flex flex-col items-center justify-center min-h-screen p-4 w-full">
+
+        <div class="w-full max-w-3xl text-center">
+            <h1 class="text-5xl md:text-7xl font-black text-white fade-in">Bhaiya Bot</h1>
+            <p class="text-lg text-gray-400 mt-2 fade-in fade-in-delay-1">Your Personal AI Voice Tutor</p>
+        </div>
+
+        <!-- Animated Avatar -->
+        <div class="mt-4 fade-in fade-in-delay-2">
+            <lottie-player id="lottie-avatar" src="https://lottie.host/4f9b3484-8b65-4b9a-a711-39c8942918a5/3d2524363.json" background="transparent" speed="1" style="width: 180px; height: 180px;" loop autoplay></lottie-player>
+        </div>
+
+        <!-- Answer Display Box -->
+        <div id="answer-box" class="w-full max-w-3xl h-64 mt-4 p-6 glass-card rounded-2xl shadow-lg flex items-center justify-center fade-in fade-in-delay-3">
+            <p id="placeholder-text" class="text-gray-400 text-lg text-center transition-opacity duration-300">Please select your level to begin!</p>
+            <div id="loader" class="hidden animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+            <!-- Scrollable container for question and answer -->
+            <div id="response-container" class="w-full h-full text-left overflow-y-auto hidden">
+                <h3 id="question-display" class="text-lg font-bold text-blue-300 mb-2 break-words"></h3>
+                <p id="answer-text" class="text-gray-300 whitespace-pre-wrap break-words"></p>
+            </div>
+        </div>
+
+        <!-- Text Input Form -->
+        <form id="text-form" class="w-full max-w-3xl mt-4 flex items-center gap-2 fade-in fade-in-delay-4">
+            <input type="text" id="question-input" placeholder="Or type your question here..." class="w-full p-4 glass-card rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+            </button>
+        </form>
+
+        <!-- Microphone Button and Status -->
+        <div class="mt-6 text-center fade-in fade-in-delay-5">
+            <button id="mic-button" class="bg-blue-600 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg transition-all duration-300 mic-glow">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm5 8a5 5 0 01-10 0H0a8 8 0 0116 0h-2a6 6 0 00-6-6V4a4 4 0 00-8 0v4a4 4 0 004 4v2a6 6 0 006 6h2a8 8 0 01-8-8z" />
+                </svg>
+            </button>
+            <p id="status-text" class="mt-4 text-sm text-gray-500 h-5 transition-opacity duration-300"></p>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        // This will be replaced with your public AWS URL after deployment
+        const API_URL = "/api/ask"; 
+        let selectedAcademicLevel = "jee_neet";
+
+        // --- DOM ELEMENTS ---
+        const micButton = document.getElementById('mic-button');
+        const loader = document.getElementById('loader');
+        const statusText = document.getElementById('status-text');
+        const lottieAvatar = document.getElementById('lottie-avatar');
+        const textForm = document.getElementById('text-form');
+        const questionInput = document.getElementById('question-input');
+        const levelModal = document.getElementById('level-modal');
+        const levelSelect = document.getElementById('level-select');
+        const confirmLevelBtn = document.getElementById('confirm-level-btn');
+        const placeholderText = document.getElementById('placeholder-text');
+        const responseContainer = document.getElementById('response-container');
+        const questionDisplay = document.getElementById('question-display');
+        const answerText = document.getElementById('answer-text');
+
+        // --- INITIAL SETUP ---
+        window.onload = () => {
+            setTimeout(() => {
+                speakAnswer("Welcome to Bhaiya Bot. Please select your academic level to begin.", true);
+            }, 500);
+        };
+
+        confirmLevelBtn.addEventListener('click', () => {
+            selectedAcademicLevel = levelSelect.value;
+            levelModal.style.opacity = 0;
+            setTimeout(() => levelModal.classList.add('hidden'), 300);
+            placeholderText.textContent = "Tap the microphone or type below to ask anything!";
+        });
+
+        // --- SPEECH RECOGNITION SETUP ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+        } else {
+            statusText.textContent = "Voice recognition not supported in this browser.";
+            micButton.disabled = true;
+        }
+
+        // --- EVENT LISTENERS ---
+        micButton.addEventListener('click', () => {
+            if (recognition && !micButton.classList.contains('pulse')) {
+                recognition.start();
+            }
+        });
+
+        textForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const question = questionInput.value;
+            if (question.trim()) {
+                getAIResponse(question);
+                questionInput.value = '';
+            }
+        });
+
+        if (recognition) {
+            recognition.onstart = () => {
+                statusText.textContent = "Listening...";
+                micButton.classList.add('pulse', 'bg-red-500');
+                micButton.classList.remove('bg-blue-600', 'mic-glow');
+                lottieAvatar.setDirection(1);
+                lottieAvatar.play();
+            };
+
+            recognition.onspeechend = () => {
+                recognition.stop();
+                statusText.textContent = "Thinking...";
+                micButton.classList.remove('pulse', 'bg-red-500');
+                micButton.classList.add('bg-blue-600', 'mic-glow');
+            };
+
+            recognition.onresult = (event) => {
+                const spokenText = event.results[0][0].transcript;
+                getAIResponse(spokenText);
+            };
+
+            recognition.onerror = (event) => {
+                statusText.textContent = `Error: ${event.error}`;
+                micButton.classList.remove('pulse', 'bg-red-500');
+                micButton.classList.add('bg-blue-600', 'mic-glow');
+            };
+        }
+
+        // --- API CALL FUNCTION ---
+        async function getAIResponse(question) {
+            placeholderText.classList.add('hidden');
+            responseContainer.classList.add('hidden');
+            loader.classList.remove('hidden');
+            statusText.textContent = "Thinking...";
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: question, level: selectedAcademicLevel }),
+                });
+
+                if (!response.ok) throw new Error(`Server Error: ${response.status}`);
+                
+                const data = await response.json();
+                displayAnswer(data.answer, question);
+
+            } catch (error) {
+                console.error('Error fetching AI response:', error);
+                displayAnswer(`Error: Could not connect to the AI. Make sure the backend server is running. Details: ${error.message}`, "Error");
+            }
+        }
+
+        // --- UI UPDATE & TEXT-TO-SPEECH ---
+        function displayAnswer(answer, question) {
+            loader.classList.add('hidden');
+            questionDisplay.textContent = `You asked: ${question}`;
+            answerText.innerText = answer;
+            responseContainer.classList.remove('hidden');
+            statusText.textContent = "Speaking...";
+            speakAnswer(answer, false);
+        }
+
+        function speakAnswer(text, isIntro = false) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.onend = () => {
+                    if (!isIntro) {
+                        statusText.textContent = "";
+                        lottieAvatar.stop();
+                    }
+                };
+                speechSynthesis.cancel();
+                speechSynthesis.speak(utterance);
+            } else if (!isIntro) {
+                lottieAvatar.stop();
+            }
+        }
+    </script>
+
+</body>
+</html>
