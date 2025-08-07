@@ -190,8 +190,7 @@
         });
 
         stopSpeechBtn.addEventListener('click', () => {
-            speechSynthesis.cancel(); // This immediately stops the speech
-            // Manually trigger cleanup because 'onend' won't fire after 'cancel'
+            speechSynthesis.cancel();
             statusText.textContent = "";
             stopSpeechBtn.classList.add('hidden');
             lottieAvatar.stop();
@@ -262,12 +261,12 @@
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(text);
                 if (!isIntro) {
-                    stopSpeechBtn.classList.remove('hidden'); // Show the stop button
+                    stopSpeechBtn.classList.remove('hidden');
                 }
                 utterance.onend = () => {
                     if (!isIntro) {
                         statusText.textContent = "";
-                        stopSpeechBtn.classList.add('hidden'); // Hide the stop button
+                        stopSpeechBtn.classList.add('hidden'); 
                         lottieAvatar.stop();
                     }
                 };
