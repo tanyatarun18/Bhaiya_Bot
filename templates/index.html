@@ -4,30 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bhaiya Bot - AI Tutor</title>
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for professional typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- Lottie Player for high-quality animations -->
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     
     <style>
-        /* Base styles for a modern look */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0a0a0a; /* A very dark gray for the base */
-            overflow: hidden; /* Prevents scrollbars from the aurora effect */
+            background-color: #0a0a0a;
+            overflow: hidden;
         }
 
-        /* The main container with a background gradient */
         .main-container {
             background-image: radial-gradient(circle at 20% 20%, rgba(10, 87, 136, 0.3), transparent 40%),
                               radial-gradient(circle at 80% 70%, rgba(136, 56, 10, 0.3), transparent 40%);
         }
 
-        /* Glassmorphism effect for cards and inputs */
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             -webkit-backdrop-filter: blur(12px);
@@ -35,7 +29,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        /* Custom styling for the dropdown to match the dark theme */
         .custom-select {
             background-color: rgba(255, 255, 255, 0.1);
             color: white;
@@ -46,7 +39,6 @@
             color: white;
         }
 
-        /* Glow effect for the microphone button */
         .mic-glow {
             box-shadow: 0 0 15px 5px rgba(59, 130, 246, 0.4), 0 0 30px 10px rgba(59, 130, 246, 0.2);
         }
@@ -54,7 +46,6 @@
             box-shadow: 0 0 20px 8px rgba(96, 165, 250, 0.6), 0 0 40px 15px rgba(96, 165, 250, 0.3);
         }
 
-        /* Pulsing animation when listening */
         .pulse {
             animation: pulse-animation 1.5s infinite;
         }
@@ -64,7 +55,6 @@
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
         
-        /* Fade-in animation for elements */
         .fade-in {
             animation: fadeInAnimation 1s ease-in-out forwards;
             opacity: 0;
@@ -82,7 +72,6 @@
 </head>
 <body class="text-gray-200">
 
-    <!-- Level Selection Modal -->
     <div id="level-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 transition-opacity duration-300">
         <div class="glass-card p-8 rounded-2xl w-full max-w-md text-center">
             <h2 class="text-2xl font-bold text-white mb-4">Select Your Level</h2>
@@ -106,12 +95,10 @@
             <p class="text-lg text-gray-400 mt-2 fade-in fade-in-delay-1">Your Personal AI Voice Tutor</p>
         </div>
 
-        <!-- Animated Avatar -->
         <div class="mt-4 fade-in fade-in-delay-2">
             <lottie-player id="lottie-avatar" src="https://lottie.host/4f9b3484-8b65-4b9a-a711-39c8942918a5/3d2524363.json" background="transparent" speed="1" style="width: 180px; height: 180px;" loop autoplay></lottie-player>
         </div>
 
-        <!-- Answer Display Box -->
         <div id="answer-box" class="w-full max-w-3xl h-64 mt-4 p-6 glass-card rounded-2xl shadow-lg flex items-center justify-center fade-in fade-in-delay-3">
             <p id="placeholder-text" class="text-gray-400 text-lg text-center transition-opacity duration-300">Please select your level to begin!</p>
             <div id="loader" class="hidden animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
@@ -122,7 +109,6 @@
             </div>
         </div>
 
-        <!-- Text Input Form -->
         <form id="text-form" class="w-full max-w-3xl mt-4 flex items-center gap-2 fade-in fade-in-delay-4">
             <input type="text" id="question-input" placeholder="Or type your question here..." class="w-full p-4 glass-card rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <button type="submit" class="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -130,24 +116,23 @@
             </button>
         </form>
 
-        <!-- Microphone Button and Status -->
         <div class="mt-6 text-center fade-in fade-in-delay-5">
             <button id="mic-button" class="bg-blue-600 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-lg transition-all duration-300 mic-glow">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm5 8a5 5 0 01-10 0H0a8 8 0 0116 0h-2a6 6 0 00-6-6V4a4 4 0 00-8 0v4a4 4 0 004 4v2a6 6 0 006 6h2a8 8 0 01-8-8z" />
                 </svg>
             </button>
-            <p id="status-text" class="mt-4 text-sm text-gray-500 h-5 transition-opacity duration-300"></p>
+            <div class="mt-4 h-8 flex items-center justify-center gap-4">
+                <p id="status-text" class="text-sm text-gray-500 transition-opacity duration-300"></p>
+                <button id="stop-speech-btn" class="hidden bg-red-500 text-white px-3 py-1 rounded-full text-sm hover:bg-red-600 transition-colors">Stop</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        // This will be replaced with your public AWS URL after deployment
-        const API_URL = "/api/ask"; 
+        const API_URL = "https://bhaiya-bot.onrender.com/api/ask";
         let selectedAcademicLevel = "jee_neet";
 
-        // --- DOM ELEMENTS ---
         const micButton = document.getElementById('mic-button');
         const loader = document.getElementById('loader');
         const statusText = document.getElementById('status-text');
@@ -161,8 +146,8 @@
         const responseContainer = document.getElementById('response-container');
         const questionDisplay = document.getElementById('question-display');
         const answerText = document.getElementById('answer-text');
+        const stopSpeechBtn = document.getElementById('stop-speech-btn'); // New button
 
-        // --- INITIAL SETUP ---
         window.onload = () => {
             setTimeout(() => {
                 speakAnswer("Welcome to Bhaiya Bot. Please select your academic level to begin.", true);
@@ -176,7 +161,6 @@
             placeholderText.textContent = "Tap the microphone or type below to ask anything!";
         });
 
-        // --- SPEECH RECOGNITION SETUP ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
 
@@ -190,7 +174,6 @@
             micButton.disabled = true;
         }
 
-        // --- EVENT LISTENERS ---
         micButton.addEventListener('click', () => {
             if (recognition && !micButton.classList.contains('pulse')) {
                 recognition.start();
@@ -204,6 +187,14 @@
                 getAIResponse(question);
                 questionInput.value = '';
             }
+        });
+
+        stopSpeechBtn.addEventListener('click', () => {
+            speechSynthesis.cancel(); // This immediately stops the speech
+            // Manually trigger cleanup because 'onend' won't fire after 'cancel'
+            statusText.textContent = "";
+            stopSpeechBtn.classList.add('hidden');
+            lottieAvatar.stop();
         });
 
         if (recognition) {
@@ -234,7 +225,6 @@
             };
         }
 
-        // --- API CALL FUNCTION ---
         async function getAIResponse(question) {
             placeholderText.classList.add('hidden');
             responseContainer.classList.add('hidden');
@@ -259,7 +249,6 @@
             }
         }
 
-        // --- UI UPDATE & TEXT-TO-SPEECH ---
         function displayAnswer(answer, question) {
             loader.classList.add('hidden');
             questionDisplay.textContent = `You asked: ${question}`;
@@ -272,9 +261,13 @@
         function speakAnswer(text, isIntro = false) {
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(text);
+                if (!isIntro) {
+                    stopSpeechBtn.classList.remove('hidden'); // Show the stop button
+                }
                 utterance.onend = () => {
                     if (!isIntro) {
                         statusText.textContent = "";
+                        stopSpeechBtn.classList.add('hidden'); // Hide the stop button
                         lottieAvatar.stop();
                     }
                 };

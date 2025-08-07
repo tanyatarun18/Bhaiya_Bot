@@ -1,5 +1,3 @@
-# prompt_templates.py
-
 PROMPTS = {
     "default": "You are a helpful and knowledgeable AI tutor named Bhaiya Bot. Your student has not specified their class, so explain the following concept clearly and concisely, avoiding very complex jargon: {user_question}",
 
@@ -14,16 +12,7 @@ PROMPTS = {
 
 
 def get_prompt_for_level(level, user_question):
-    """
-    This function acts as the "selector".
-    It chooses the correct prompt template from the PROMPTS dictionary based on the 'level'
-    and then inserts the user's question into it.
-    """
-    # Use the .get() method to safely find the prompt.
-    # If the level sent by the app doesn't exist in our dictionary
-    # (e.g., "class_7"), it will fall back to the "default" prompt
-    # instead of crashing. This makes the bot robust.
+
     template = PROMPTS.get(level.lower(), PROMPTS["default"])
 
-    # Insert the user's actual question into the chosen template's placeholder.
     return template.format(user_question=user_question)
